@@ -26,6 +26,18 @@ final class UsersTableVCTest: XCTestCase {
         
     }
     
+    func test_ViewDidLoad_ConfiguresTableView() throws {
+        
+       let sut = try makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        
+        XCTAssertNotNil(sut.tableView.delegate)
+        XCTAssertNotNil(sut.tableView.dataSource)
+
+    }
+    
     private func makeSUT() throws -> UsersTableVC {
         let bundle = Bundle(for: UsersTableVC.self)
         let sb = UIStoryboard(name: "Main", bundle: bundle)
