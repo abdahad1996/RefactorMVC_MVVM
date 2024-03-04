@@ -11,17 +11,22 @@ import XCTest
 final class UsersTableVCTest: XCTestCase {
 
     func testCanInit() throws {
-        let bundle = Bundle(for: UsersTableVC.self)
-        let sb = UIStoryboard(name: "Main", bundle: bundle)
-        
-        let initialVC = sb.instantiateInitialViewController()
-        let navigation = try XCTUnwrap(initialVC as? UINavigationController)
-        
-       let _ = try XCTUnwrap(navigation.topViewController as? UsersTableVC)
+        let sut = try makeSUT()
         
     }
     
     func test_ViewDidLoad_SetsTitle() throws {
+        
+       let sut = try makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(sut.title, "Users")
+     
+        
+    }
+    
+    private func makeSUT() throws -> UsersTableVC {
         let bundle = Bundle(for: UsersTableVC.self)
         let sb = UIStoryboard(name: "Main", bundle: bundle)
         
@@ -30,11 +35,7 @@ final class UsersTableVCTest: XCTestCase {
         
        let sut = try XCTUnwrap(navigation.topViewController as? UsersTableVC)
         
-        sut.loadViewIfNeeded()
-        
-        XCTAssertEqual(sut.title, "Users")
-     
-        
+        return sut
     }
     
 }
