@@ -45,7 +45,7 @@ final class UsersTableVCTest: XCTestCase {
         sut.loadViewIfNeeded()
         
         
-        XCTAssertEqual(sut.tableView.numberOfRows(inSection: 0),0)
+        XCTAssertEqual(sut.numberOfUsers(),0)
 
     }
     
@@ -58,20 +58,19 @@ final class UsersTableVCTest: XCTestCase {
         sut.getUsers = { completion in
             completion(.success(
                 [
-                    User(id: 0, name: "user1", email: "email1"),
-                    User(id: 1, name: "user2", email: "email2")
+                    sut.makeUser(name:"user1",email:"email1"),
+                    sut.makeUser(name:"user2",email:"email2"),
+                    
 
                 ]))
         }
         
         sut.loadViewIfNeeded()
-//        let exp = expectation(description: "wait for api")
-//        exp.isInverted = true
-//       
-//        wait(for: [exp],timeout:0.1)
+        XCTAssertEqual(sut.numberOfUsers(),2)
         
-        XCTAssertEqual(sut.tableView.numberOfRows(inSection: 0),2)
-        
+        XCTAssertEqual(sut.name(AtRow: 0),"user1")
+        XCTAssertEqual(sut.email(AtRow: 0),"email1")
+
 
     }
     
@@ -90,6 +89,30 @@ final class UsersTableVCTest: XCTestCase {
     
     
     
+    
 }
 
-
+private extension UsersTableVC {
+     func makeUser(name:String, email:String) -> User {
+        User(id: 0, name: name, email: email)
+    }
+    func name(AtRow row:Int) -> String? {
+        return userCell(atRow:row)?.nameLabel.text
+    }
+    
+    func email(AtRow row:Int) -> String? {
+        return userCell(atRow:row)?.emailLabel.text
+    }
+    
+    func userCell(atRow row:Int) -> UserCell?{
+        let ds = tableView.dataSource
+        let indexPath = IndexPath(row: row, section: UserSection)
+        let cell = ds?.tableView(tableView, cellForRowAt: indexPath) as? UserCell
+        return cell
+    }
+    func numberOfUsers() -> Int {
+       return tableView.numberOfRows(inSection: UserSection)
+    }
+    
+    private var UserSection:Int{0}
+}
