@@ -9,7 +9,17 @@ import UIKit
 
 class UsersTableVC: UIViewController {
 
+    var getUsers:GetUsers = { completion in
+       
+            ApiManager.shared.getUsers { result in
+                DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+       
+    }
     var users: [User] = []
+    
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -23,15 +33,15 @@ class UsersTableVC: UIViewController {
     }
     
     func getUsersFromSingleTone(){
-        ApiManager.shard.getUsers { (result) in
+        getUsers { (result) in
             switch result{
             case .failure(let error):
                 print(error.localizedDescription)
             case.success(let users):
-                DispatchQueue.main.async {
+                
                     self.users = users
                     self.tableView.reloadData()
-                }
+              
             }
         }
     }

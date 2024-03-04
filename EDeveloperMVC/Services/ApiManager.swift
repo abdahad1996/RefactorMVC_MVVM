@@ -8,11 +8,15 @@
 
 import Foundation
 
+
+typealias GetUsers = ( @escaping (Result<[User], Error>) -> Void) -> Void
+
+
 class ApiManager {
     
-    static let shard = ApiManager()
+    static let shared = ApiManager()
     
-    private init() {}
+    private init(){}
     
     func getUsers(completion: @escaping (Result<[User], Error>) -> Void ){
         //1.url
