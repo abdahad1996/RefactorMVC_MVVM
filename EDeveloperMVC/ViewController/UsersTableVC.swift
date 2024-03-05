@@ -63,7 +63,7 @@ extension UsersTableVC: UITableViewDelegate, UITableViewDataSource{
         cell?.nameLabel.text = users[indexPath.row].name
         cell?.emailLabel.text = users[indexPath.row].email
         
-        if users[indexPath.row].name.contains("C"){
+        if users[indexPath.row].name.starts(with: "C"){
             cell?.backgroundColor = .green
         }
         else{

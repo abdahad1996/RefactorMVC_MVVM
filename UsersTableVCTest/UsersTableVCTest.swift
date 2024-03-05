@@ -74,6 +74,32 @@ final class UsersTableVCTest: XCTestCase {
 
     }
     
+    func test_ViewDidLoad_WhenUserNameStartsWithC_HighlightCell() throws {
+        
+       let sut = try makeSUT()
+       
+        
+        sut.getUsers = { completion in
+            completion(.success(
+                [
+                    sut.makeUser(name:"C user0",email:"email0"),
+                    sut.makeUser(name:"user1 C",email:"email1"),
+                    sut.makeUser(name:"user2 C",email:"email2"),
+
+
+                ]))
+        }
+        
+        sut.loadViewIfNeeded()
+        XCTAssertEqual(sut.numberOfUsers(),3)
+        
+        XCTAssertTrue(sut.highlights(AtRow: 0),"should be heighlighted")
+        XCTAssertTrue(sut.notHighlights(AtRow: 1),"should  be heighlighted")
+        XCTAssertTrue(sut.notHighlights(AtRow: 2),"should not be heighlighted")
+
+
+    }
+    
     private func makeSUT() throws -> UsersTableVC {
         let bundle = Bundle(for: UsersTableVC.self)
         let sb = UIStoryboard(name: "Main", bundle: bundle)
@@ -102,6 +128,14 @@ private extension UsersTableVC {
     
     func email(AtRow row:Int) -> String? {
         return userCell(atRow:row)?.emailLabel.text
+    }
+    
+    func highlights(AtRow row:Int) -> Bool {
+        return userCell(atRow:row)?.backgroundColor == .green
+    }
+    
+    func notHighlights(AtRow row:Int) -> Bool {
+        return userCell(atRow:row)?.backgroundColor == .white
     }
     
     func userCell(atRow row:Int) -> UserCell?{
