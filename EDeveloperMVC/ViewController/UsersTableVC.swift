@@ -7,18 +7,23 @@
 
 import UIKit
 
-class UsersTableVC: UIViewController {
-
-    var getUsers:GetUsers = { completion in
-       
-            ApiManager.shared.getUsers { result in
-                DispatchQueue.main.async {
+class UserApiAdpater {
+    static func getUsers(completion: @escaping (Result<[User], Error>) -> Void ){
+        ApiManager.shared.getUsers { result in
+            DispatchQueue.main.async {
                 completion(result)
             }
+            
         }
-       
     }
-    var users: [User] = []
+}
+    
+    class UsersTableVC: UIViewController {
+        
+    var getUsers:GetUsers = UserApiAdpater.getUsers(completion:)
+        
+    
+    private var users: [UserViewModel] = []
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -32,21 +37,21 @@ class UsersTableVC: UIViewController {
         getUsersFromSingleTone()
     }
     
-    func getUsersFromSingleTone(){
+    private func getUsersFromSingleTone(){
         getUsers { (result) in
             switch result{
             case .failure(let error):
                 print(error.localizedDescription)
             case.success(let users):
                 
-                    self.users = users
-                    self.tableView.reloadData()
-              
+                self.users = users.map(UserViewModel.init)
+                self.tableView.reloadData()
+                
             }
         }
     }
     
-    func configureTableView(){
+    private func configureTableView(){
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -60,10 +65,11 @@ extension UsersTableVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? UserCell
         
-        cell?.nameLabel.text = users[indexPath.row].name
-        cell?.emailLabel.text = users[indexPath.row].email
+        let user = users[indexPath.row]
+        cell?.nameLabel.text = user.name
+        cell?.emailLabel.text = user.email
         
-        if users[indexPath.row].name.starts(with: "C"){
+        if user.isHighlighted{
             cell?.backgroundColor = .green
         }
         else{
@@ -76,3 +82,14 @@ extension UsersTableVC: UITableViewDelegate, UITableViewDataSource{
     
 }
 
+struct UserViewModel{
+    let name:String
+    let email:String
+    let isHighlighted:Bool
+    
+    init(user:User){
+        name = user.name
+        email = user.email
+        isHighlighted = user.name.starts(with: "C")
+    }
+}
